@@ -1,0 +1,164 @@
+
+
+<html>
+<style>
+td {
+   width: 50px;
+   height: 50px;
+   text-align: center;
+   font-size: 18pt;
+}
+</style>
+
+
+<h1>Puzzle Game</h1>
+
+
+
+<table border="1">
+  <tr>
+    <td id="id_1_1" onclick="cellclick(1,1);">1</td>
+    <td id="id_1_2" onclick="cellclick(1,2);">2</td>
+    <td id="id_1_3" onclick="cellclick(1,3);">3</td>
+    <td id="id_1_4" onclick="cellclick(1,4);">4</td>
+  </tr>
+  <tr>
+    <td id="id_2_1" onclick="cellclick(2,1);">5</td>
+    <td id="id_2_2" onclick="cellclick(2,2);">6</td>
+    <td id="id_2_3" onclick="cellclick(2,3);">7</td>
+    <td id="id_2_4" onclick="cellclick(2,4);">8</td>
+  </tr>
+  <tr>
+    <td id="id_3_1" onclick="cellclick(3,1);">9</td>
+    <td id="id_3_2" onclick="cellclick(3,2);">10</td>
+    <td id="id_3_3" onclick="cellclick(3,3);">11</td>
+    <td id="id_3_4" onclick="cellclick(3,4);">12</td>
+  </tr>
+  <tr>
+    <td id="id_4_1" onclick="cellclick(4,1);">13</td>
+    <td id="id_4_2" onclick="cellclick(4,2);">14</td>
+    <td id="id_4_3" onclick="cellclick(4,3);">15</td>
+    <td id="id_4_4" onclick="cellclick(4,4);"> </td>
+  </tr>
+</table>
+
+
+<br>
+<br>
+<button onclick="scramble();">Scramble</button>
+
+
+<script>
+function cellclick(r, c) {
+  above = { r: r-1, c: c };
+  left = { r: r, c: c-1 };
+  right = { r: r, c: c+1 };
+  below = { r: r+1, c: c };
+
+  aboveCell = document.getElementById("id_" + above.r + "_" + above.c);
+  leftCell = document.getElementById("id_" + left.r + "_" + left.c);
+  rightCell = document.getElementById("id_" + right.r + "_" + right.c);
+  belowCell = document.getElementById("id_" + below.r + "_" + below.c);
+
+  cell = undefined;
+  if (!cell && aboveCell && aboveCell.innerHTML == " ")
+    cell = aboveCell;
+  if (!cell && leftCell && leftCell.innerHTML == " ")
+    cell = leftCell;
+  if (!cell && rightCell && rightCell.innerHTML == " ")
+    cell = rightCell;
+  if (!cell && belowCell && belowCell.innerHTML == " ")
+    cell = belowCell;
+
+  if (!cell) {
+    alert("Bad Click!");
+    return;
+  }
+
+  val = document.getElementById("id_" + r + "_" + c).innerHTML;
+  cell.innerHTML = val;
+  document.getElementById("id_" + r + "_" + c).innerHTML = " ";
+
+  checkWin();
+}
+
+function checkWin() {
+  arr = [ ];
+  for (i=1; i<=15; i++)
+    arr.push(i);
+  arr.push(" ");
+  
+  for (r=1;  r<=4; r++) {
+    for (c=1;  c<=4; c++) {
+      id = "id_" + r + "_" + c;
+
+      num = arr[(r-1)*4 + c - 1];
+
+      if (document.getElementById(id).innerHTML != num)
+        return false;
+    }
+  }
+
+  confirm("You Win!");
+}
+
+function scramble() {
+  clear();
+
+  arr = [" "];
+  for (i=1; i<=15; i++)
+    arr.push(i);
+
+  arr = shuffle(arr);
+
+  
+  for (r=1;  r<=4; r++) {
+    for (c=1;  c<=4; c++) {
+      id = "id_" + r + "_" + c;
+
+      
+      num = arr[(r-1)*4 + c - 1];
+
+      document.getElementById(id).innerHTML = num;
+    }
+  }
+
+}
+
+function clear() {
+  for (r=1;  r<=4; r++) {
+    for (c=1;  c<=4; c++) {
+      id = "id_" + r + "_" + c;
+      document.getElementById(id).innerHTML = " ";
+    }
+  }
+}
+
+function shuffle(array) {
+  var currentIndex = array.length
+    , temporaryValue
+    , randomIndex
+    ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+
+
+</script>
+
+
+</html>
