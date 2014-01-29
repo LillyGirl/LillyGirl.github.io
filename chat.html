@@ -1,0 +1,90 @@
+
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Chat</title>
+
+    <script language="javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    <script language="javascript" src="http://www.rdbhost.com/vendor/Modernizr/2.6/modernizr-2.6.2.min.js"></script>
+    <script language="javascript" src="http://www.rdbhost.com/js/jquery.rdbhost.js"></script>
+    <script language="javascript" src="http://www.rdbhost.com/js/jquery.rdbhost.utils.js"></script>
+    <script language="javascript" src="http://www.rdbhost.com/js/json2.js"></script>
+  </head>
+
+  <script>
+    var R = window.Rdbhost;
+
+	function addStatus(msg) {
+		console.log('Status: ' + msg);
+		$('status').innerHTML = $('status').innerHTML + '<br/>' + msg;
+	}
+
+    $(document).ready(function() {
+		$.rdbHostConfig({
+			accountNumber: 1354,
+			domain: "www.rdbhost.com",
+			userName: 'super'
+		});
+
+		function createSchema() {
+			console.log('creating schema');
+			R.superPostData( {
+				'q': 'CREATE SCHEMA game;',
+				'callback' : function() {
+					addStatus('Schema created.');
+					createTables();
+				},
+				'errback' : function(err) {
+					if (err[0] == '42P06')
+						addStatus('Schema already exists.');
+					else
+						addStatus(err[1]);
+				}
+			});
+		}
+
+		function createTables() {
+			console.log('creating tables');
+			R.superPostData( {
+				'q': 'CREATE TABLE game.users ( ' +
+						 'login VARCHAR(40) NOT NULL PRIMARY KEY ' +
+						 'password VARCHAR(40) NOT NULL' +
+					 ');',
+				'callback' : function() {
+					addStatus('Tables created.');
+				},
+				'errback' : function(err) {
+					if (err[0] == '42P07')
+						addStatus('Tables already exist.');
+					else
+						addStatus(err[1]);
+				}
+			});
+		}
+
+		function grantPrivs() {
+			console.log('granting privs');
+			R.superPostData( {
+				'q': 'GRANT ALL ON SCHEMA game TO p0000001354;',
+				'callback': function() {
+					addStatus('Privs granted.');
+				},
+				'errback': function(err) {
+					 addStatus(err[1]);
+				}
+			});
+		}
+
+		$('#setup-btn').click(function() {
+			console.log('button click');
+			createSchema();
+		});
+	});
+
+  </script>
+
+  <p><input type="submit" value="Setup" id="setup-btn" /></p>
+  <p><div id="status"></div></p>
+
+</html>
+
