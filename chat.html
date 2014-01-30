@@ -26,6 +26,7 @@
 		var res = rdb.query({
 			'q': "INSERT INTO game.users (login, password) VALUES ('%s', '%s');",
 			'args': [username, password],
+			'argtypes': ['STRING', 'STRING'],
 			'callback': function(a, b) {
 				console.log('Success');
 				console.log(a);
@@ -49,6 +50,7 @@
 		var res = rdb.query({
 			'q': "SELECT login FROM game.users WHERE login = '%s' AND password = '%s';",
 			'args': [username, password],
+			'argtypes': ['STRING', 'STRING'],
 			'callback': function(a, b) {
 				console.log('Success');
 				console.log(a);
