@@ -24,7 +24,7 @@
 		var password = document.getElementById('login_password').value;
 
 		var res = rdb.query({
-			'q': 'SELECT COUNT(*) FROM game.users WHERE login = "%s" AND password = "%s";',
+			'q': "INSERT INTO game.users (login, password) VALUES ('%s', '%s');",
 			'args': [username, password],
 			'callback': function(a, b) {
 				console.log('Success');
@@ -37,24 +37,31 @@
 					console.log(i + " => " + err[i]);
 			}
 		});
-		console.log("Res: " + res);
+		console.log("Res:");
+		console.log(res);
 	}
 
 	function login() {
 		console.log('login');
 		var username = document.getElementById('login_username').value;
 		var password = document.getElementById('login_password').value;
-		console.log(username);
-		console.log(password);
-		//R.superPostData( {
-		//	'q': 'GRANT ALL ON SCHEMA game TO p0000001354;',
-		//	'callback': function() {
-		//		addStatus('Privs granted.');
-		//	},
-		//	'errback': function(err) {
-		//		 addStatus(err[1]);
-		//	}
-		//});
+
+		var res = rdb.query({
+			'q': "SELECT login FROM game.users WHERE login = '%s' AND password = '%s';",
+			'args': [username, password],
+			'callback': function(a, b) {
+				console.log('Success');
+				console.log(a);
+				console.log(b);
+			},
+			'errback': function(err) {
+				console.log('Error');
+				for (i = 0; i < err.length; i++)
+					console.log(i + " => " + err[i]);
+			}
+		});
+		console.log("Res:");
+		console.log(res);
 	}
 
   </script>
