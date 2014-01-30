@@ -14,77 +14,86 @@
   <script>
     var R = window.Rdbhost;
 
-	function addStatus(msg) {
-		console.log('Status: ' + msg);
-		$('status').innerHTML = $('status').innerHTML + '<br/>' + msg;
-	}
-
     $(document).ready(function() {
 		$.rdbHostConfig({
 			accountNumber: 1354,
 			domain: "www.rdbhost.com",
 			userName: 'super'
 		});
-
-		function createSchema() {
-			console.log('creating schema');
-			R.superPostData( {
-				'q': 'CREATE SCHEMA game;',
-				'callback' : function() {
-					addStatus('Schema created.');
-					createTables();
-				},
-				'errback' : function(err) {
-					if (err[0] == '42P06')
-						addStatus('Schema already exists.');
-					else
-						addStatus(err[1]);
-				}
-			});
-		}
-
-		function createTables() {
-			console.log('creating tables');
-			R.superPostData( {
-				'q': 'CREATE TABLE game.users ( ' +
-						 'login VARCHAR(40) NOT NULL PRIMARY KEY ' +
-						 'password VARCHAR(40) NOT NULL' +
-					 ');',
-				'callback' : function() {
-					addStatus('Tables created.');
-				},
-				'errback' : function(err) {
-					if (err[0] == '42P07')
-						addStatus('Tables already exist.');
-					else
-						addStatus(err[1]);
-				}
-			});
-		}
-
-		function grantPrivs() {
-			console.log('granting privs');
-			R.superPostData( {
-				'q': 'GRANT ALL ON SCHEMA game TO p0000001354;',
-				'callback': function() {
-					addStatus('Privs granted.');
-				},
-				'errback': function(err) {
-					 addStatus(err[1]);
-				}
-			});
-		}
-
-		$('#setup-btn').click(function() {
-			console.log('button click');
-			createSchema();
-		});
 	});
+
+
+function success(json) {
+	console.log(json);
+}
+
+		function createAccount() {
+			console.log('create account');
+			var username = document.getElementById('login_username').value;
+			var password = document.getElementById('login_password').value;
+			console.log(username);
+			console.log(password);
+
+var uid = 'r0000001354';
+var rdb = new SQLEngine(uid, undefined, 'www.rdbhost.com');
+var query = 'SELECT 1+1 as "sum"';
+var res = rdb.query({'callback' : success, 'q': query });
+
+//			R.postData( {
+//				'q': 'SELECT COUNT(*) FROM game.users WHERE login = "%s" AND password = "%s";',
+//				'args': [username, password],
+//				'callback': function(a, b) {
+//					console.log('Success');
+//					console.log(a);
+//					console.log(b);
+//				},
+//				'errback': function(err) {
+//					console.log('Error');
+//					for (i = 0; i < err.length; i++)
+//						console.log(i + " => " + err[i]);
+//				}
+//			});
+		}
+
+		function login() {
+			console.log('login');
+			var username = document.getElementById('login_username').value;
+			var password = document.getElementById('login_password').value;
+			console.log(username);
+			console.log(password);
+			//R.superPostData( {
+			//	'q': 'GRANT ALL ON SCHEMA game TO p0000001354;',
+			//	'callback': function() {
+			//		addStatus('Privs granted.');
+			//	},
+			//	'errback': function(err) {
+			//		 addStatus(err[1]);
+			//	}
+			//});
+		}
 
   </script>
 
-  <p><input type="submit" value="Setup" id="setup-btn" /></p>
-  <p><div id="status"></div></p>
+  <div id="login-div" style="text-align:center;width:100%;">
+    <center>
+      <table id="login-table">
+        <tr>
+	      <td>User Name:</td>
+	      <td><input type="text" id="login_username" width="30"></td>
+	    </tr>
+        <tr>
+	      <td>Password:</td>
+	      <td><input type="password" id="login_password" width="30"></td>
+	    </tr>
+        <tr>
+	      <td colspan="2" align="right">
+	        <input type="submit" value="Create Account" onclick="createAccount();" />
+	        <input type="submit" value="Login" onclick="login();" />
+	      </td>
+	    </tr>
+      </table>
+    </center>
+  </div>
 
 </html>
 
