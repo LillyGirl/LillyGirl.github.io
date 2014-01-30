@@ -24,7 +24,7 @@
 		var password = document.getElementById('login_password').value;
 
 		var res = rdb.query({
-			'q': "INSERT INTO game.users (login, password) VALUES ('%s', '%s');",
+			'q': "INSERT INTO game.users (login, password) VALUES (%s, %s);",
 			'args': ['a', username, password],
 			'argtypes': ['STRING', 'STRING', 'STRING'],
 			'callback': function(a, b) {
@@ -38,8 +38,6 @@
 					console.log(i + " => " + err[i]);
 			}
 		});
-		console.log("Res:");
-		console.log(res);
 	}
 
 	function login() {
@@ -48,7 +46,7 @@
 		var password = document.getElementById('login_password').value;
 
 		var res = rdb.query({
-			'q': "SELECT login FROM game.users WHERE login = '%s' AND password = '%s';",
+			'q': "SELECT login FROM game.users WHERE login = %s AND password = %s;",
 			'args': ['a', username, password],
 			'argtypes': ['STRING', 'STRING', 'STRING'],
 			'callback': function(a, b) {
@@ -62,8 +60,6 @@
 					console.log(i + " => " + err[i]);
 			}
 		});
-		console.log("Res:");
-		console.log(res);
 	}
 
   </script>
