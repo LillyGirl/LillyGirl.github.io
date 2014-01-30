@@ -12,7 +12,7 @@
   </head>
 
   <script>
-	var rdb = new SQLEngine('r0000001354', undefined, 'www.rdbhost.com');
+	var rdb = new SQLEngine('s0000001354', 'P5nMsUTIhCM90W7cdzkfEO7T5k6rNgRLd0SHx1TjmSF693LphS', 'www.rdbhost.com');
 
 	function success(json) {
 		console.log(json);
@@ -25,8 +25,8 @@
 
 		var res = rdb.query({
 			'q': "INSERT INTO game.users (login, password) VALUES (%s, %s);",
-			'args': ['a', username, password],
-			'argtypes': ['STRING', 'STRING', 'STRING'],
+			'args': [username, password],
+			'argtypes': ['STRING', 'STRING'],
 			'callback': function(a, b) {
 				console.log('Success');
 				console.log(a);
@@ -47,8 +47,8 @@
 
 		var res = rdb.query({
 			'q': "SELECT login FROM game.users WHERE login = %s AND password = %s;",
-			'args': ['a', username, password],
-			'argtypes': ['STRING', 'STRING', 'STRING'],
+			'args': [username, password],
+			'argtypes': ['STRING', 'STRING'],
 			'callback': function(a, b) {
 				console.log('Success');
 				console.log(a);
