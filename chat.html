@@ -12,77 +12,208 @@
   </head>
 
   <script>
-	var rdb = new SQLEngine('s0000001354', 'P5nMsUTIhCM90W7cdzkfEO7T5k6rNgRLd0SHx1TjmSF693LphS', 'www.rdbhost.com');
+    var me = undefined;
 
-	function success(json) {
-		console.log(json);
-	}
+    var rdb = new SQLEngine('s0000001354', 'P5nMsUTIhCM90W7cdzkfEO7T5k6rNgRLd0SHx1TjmSF693LphS', 'www.rdbhost.com');
 
-	function createAccount() {
-		console.log('create account');
-		var username = document.getElementById('login_username').value;
-		var password = document.getElementById('login_password').value;
+    function createAccount() {
+        var username = document.getElementById('login_username').value;
+        var password = document.getElementById('login_password').value;
 
-		var res = rdb.query({
-			'q': "INSERT INTO game.users (login, password) VALUES (%s, %s);",
-			'args': [username, password],
-			'argtypes': ['STRING', 'STRING'],
-			'callback': function(a, b) {
-				console.log('Success');
-				console.log(a);
-				console.log(b);
-			},
-			'errback': function(err) {
-				console.log('Error');
-				for (i = 0; i < err.length; i++)
-					console.log(i + " => " + err[i]);
-			}
-		});
-	}
+        rdb.query({
+            'q': "INSERT INTO game.users (login, password) VALUES (%s, %s);",
+            'args': [username, password],
+            'argtypes': ['STRING', 'STRING'],
+            'callback': function() {
+                me = username;
+                displayInterface();
+            },
+            'errback': function(err) {
+                alert(err[1]);
+            }
+        });
+    }
 
-	function login() {
-		console.log('login');
-		var username = document.getElementById('login_username').value;
-		var password = document.getElementById('login_password').value;
+    function login() {
+        console.log('login');
+        var username = document.getElementById('login_username').value;
+        var password = document.getElementById('login_password').value;
 
-		var res = rdb.query({
-			'q': "SELECT login FROM game.users WHERE login = %s AND password = %s;",
-			'args': [username, password],
-			'argtypes': ['STRING', 'STRING'],
-			'callback': function(a, b) {
-				console.log('Success');
-				console.log(a);
-				console.log(b);
-			},
-			'errback': function(err) {
-				console.log('Error');
-				for (i = 0; i < err.length; i++)
-					console.log(i + " => " + err[i]);
-			}
-		});
-	}
+        rdb.query({
+            'q': "SELECT login FROM game.users WHERE login = %s AND password = %s;",
+            'args': [username, password],
+            'argtypes': ['STRING', 'STRING'],
+            'callback': function(json) {
+                var rows = json.records.rows.length;
+                console.log("Rows: " + rows);
+                if (rows > 0) {
+                    console.log("Logged in! " + username);
+                    me = username;
+                    displayInterface();
+                }
+            },
+            'errback': function(err) {
+                alert(err[1]);
+            }
+        });
+    }
+
+    function addChat(from, msg) {
+        var el = document.getElementById('chats');
+        var html = el.innerHTML;
+        html += '<br><b>' + from + ':</b> ' + msg;
+        el.innerHTML = html;
+    }
+
+    function pad(num) {
+        return (String(num).length === 1) ? '0' + num : num;
+    }
+    function getTime(d) {
+        return d.getUTCFullYear()
+            + '-' + pad(d.getUTCMonth() + 1)
+            + '-' + pad(d.getUTCDate())
+            + 'T' + pad(d.getUTCHours())
+            + ':' + pad(d.getUTCMinutes())
+            + ':' + pad(d.getUTCSeconds())
+            + '.' + String((d.getUTCMilliseconds()/1000).toFixed(3)).slice(2, 5)
+            + 'Z';
+    }
+
+    function send() {
+        var message = document.getElementById('message-box').value;
+        addChat(me, message);
+
+        var now = getTime(new Date());
+
+        rdb.query({
+            'q': "INSERT INTO game.messages (sender, message, time) VALUES (%s, %s, %s);",
+            'args': [me, message, now],
+            'argtypes': ['STRING', 'STRING', 'STRING'],
+            'callback': function() {
+                console.log("Sent!");
+            },
+            'errback': function(err) {
+                alert(err[1]);
+            }
+        });
+        return false;
+    }
+
+    function displayInterface() {
+        console.log('Displaying interface!');
+        document.getElementById('login-div').style.visibility = 'hidden';
+        document.getElementById('ui-div').style.visibility = 'visible';
+
+        showUsers();
+        showNewMessages();
+    }
+
+    var lastCheck = undefined;
+    function showNewMessages() {
+        if (!lastCheck)
+            lastCheck = new Date(new Date().getTime() - (10 * 60 * 1000));
+
+        var since = getTime(lastCheck);
+        console.log("Checking since: " + since);
+
+        rdb.query({
+            'q': "SELECT sender, message FROM game.messages WHERE time >= %s ORDER BY time;",
+            'args': [since],
+            'argtypes': ['STRING'],
+            'callback': function(json) {
+                lastCheck = new Date();
+                console.log(json);
+                var html = '';
+                var rows = json.records.rows;
+                for (var r = 0; r < rows.length; r++) {
+                    console.log("Row: " + r + " => " + rows[r]);
+                    html += '<br>' + rows[r];
+                }
+                var userlist = document.getElementById('chats');
+                userlist.innerHTML = userList.innerHTML + html;
+            },
+            'errback': function(err) {
+                alert(err[1]);
+            }
+        });
+    }
+
+    function showUsers() {
+        rdb.query({
+            'q': "SELECT login FROM game.users ORDER BY login;",
+            'callback': function(json) {
+                console.log(json);
+                var html = '';
+                var rows = json.records.rows;
+                for (var r = 0; r < rows.length; r++) {
+                    console.log("Row: " + r + " => " + rows[r]);
+                    html += '<br>' + rows[r];
+                }
+                var userlist = document.getElementById('user-list');
+                userlist.innerHTML = html;
+            },
+            'errback': function(err) {
+                alert(err[1]);
+            }
+        });
+    }
+
+    //me = 'SuperDad';
+    //window.setTimeout("displayInterface()", 2000);
+    //window.setInterval("showNewMessages()", 5000);
 
   </script>
 
-  <div id="login-div" style="text-align:center;width:100%;">
+  <div id="login-div" style="position:absolute;text-align:center;width:100%;">
     <center>
       <table id="login-table">
         <tr>
-	      <td>User Name:</td>
-	      <td><input type="text" id="login_username" width="30"></td>
-	    </tr>
+          <td>User Name:</td>
+          <td><input type="text" id="login_username" width="30"></td>
+        </tr>
         <tr>
-	      <td>Password:</td>
-	      <td><input type="password" id="login_password" width="30"></td>
-	    </tr>
+          <td>Password:</td>
+          <td><input type="password" id="login_password" width="30"></td>
+        </tr>
         <tr>
-	      <td colspan="2" align="right">
-	        <input type="submit" value="Create Account" onclick="createAccount();" />
-	        <input type="submit" value="Login" onclick="login();" />
-	      </td>
-	    </tr>
+          <td colspan="2" align="right">
+            <input type="submit" value="Create Account" onclick="createAccount();" />
+            <input type="submit" value="Login" onclick="login();" />
+          </td>
+        </tr>
       </table>
     </center>
+  </div>
+
+  <div id="ui-div" style="visibility:hidden;border:1px solid black;width:100%;height:100%;">
+    <table cellpadding="0" cellspacing="0" id="ui-table" height="100%">
+      <tr>
+        <td style="width:220px;vertical-align:top;border-right:1px solid black;">
+          <b>User List</b>
+          <div id="user-list" style="width:220px;padding-left:15px;">
+          </div>
+        </td>
+        <td width="100%">
+          <table cellpadding="0" cellspacing="0" width="100%" height="100%">
+            <tr>
+              <td height="100%">
+                <b>Messages:</b>
+                <input type="submit" value="Get New" onclick="return showNewMessages();"><br/>
+                <div id="chats" style="width:100%;height:100%;">
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td height="0%">
+                <b>Message:</b>
+                <input type="text" id="message-box" size="70"></input>
+                <input type="submit" value="Send" onclick="return send();">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </div>
 
 </html>
