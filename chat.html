@@ -47,6 +47,19 @@
                 if (rows > 0) {
                     me = username;
                     displayInterface();
+
+                    var old = getTime(new Date(new Date().getTime() - (10 * 60 * 1000)));
+                    rdb.query({
+                        'q': "DELETE FROM game.messages WHERE time < %s;",
+                        'args': [old],
+                        'argtypes': ['STRING'],
+                        'callback': function(json) {
+                            // Old messages deleted.
+                        },
+                        'errback': function(err) {
+                            alert(err[1]);
+                        }
+                    });
                 }
             },
             'errback': function(err) {
