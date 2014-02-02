@@ -59,7 +59,7 @@
     }
 
     function addChat(from, msg) {
-        var el = document.getElementById('chats');
+        var el = document.getElementById('messages');
         var html = el.innerHTML;
         html += '<br><b>' + from + ':</b> ' + msg;
         el.innerHTML = html;
@@ -125,9 +125,11 @@
                 console.log(json);
                 var html = '';
                 var rows = json.records.rows;
-                for (var r = 0; r < rows.length; r++) {
-                    console.log("Row: " + r + " => " + rows[r]);
-                    html += '<br>' + rows[r];
+                if (rows) {
+                    for (var r = 0; r < rows.length; r++) {
+                        console.log("Row: " + r + " => " + rows[r]);
+                        html += '<br>' + rows[r];
+                    }
                 }
                 var userlist = document.getElementById('chats');
                 userlist.innerHTML = userList.innerHTML + html;
@@ -145,9 +147,11 @@
                 console.log(json);
                 var html = '';
                 var rows = json.records.rows;
-                for (var r = 0; r < rows.length; r++) {
-                    console.log("Row: " + r + " => " + rows[r]);
-                    html += '<br>' + rows[r];
+                if (rows) {
+                    for (var r = 0; r < rows.length; r++) {
+                        console.log("Row: " + r + " => " + rows[r]);
+                        html += '<br>' + rows[r];
+                    }
                 }
                 var userlist = document.getElementById('user-list');
                 userlist.innerHTML = html;
@@ -158,8 +162,8 @@
         });
     }
 
-    //me = 'SuperDad';
-    //window.setTimeout("displayInterface()", 2000);
+    me = 'SuperDad';
+    window.setTimeout("displayInterface()", 2000);
     //window.setInterval("showNewMessages()", 5000);
 
   </script>
@@ -197,9 +201,12 @@
           <table cellpadding="0" cellspacing="0" width="100%" height="100%">
             <tr>
               <td height="100%">
-                <b>Messages:</b>
-                <input type="submit" value="Get New" onclick="return showNewMessages();"><br/>
                 <div id="chats" style="width:100%;height:100%;">
+                  <div>
+                    <b>Messages:</b>
+                    <input type="submit" value="Get New" onclick="return showNewMessages();"><br/>
+                  </div>
+                  <div id="messages"></div>
                 </div>
               </td>
             </tr>
