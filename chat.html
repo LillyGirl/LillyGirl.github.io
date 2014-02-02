@@ -35,7 +35,6 @@
     }
 
     function login() {
-        console.log('login');
         var username = document.getElementById('login_username').value;
         var password = document.getElementById('login_password').value;
 
@@ -45,9 +44,7 @@
             'argtypes': ['STRING', 'STRING'],
             'callback': function(json) {
                 var rows = json.records.rows.length;
-                console.log("Rows: " + rows);
                 if (rows > 0) {
-                    console.log("Logged in! " + username);
                     me = username;
                     displayInterface();
                 }
@@ -59,7 +56,7 @@
     }
 
     function addChat(from, msg) {
-        var el = document.getElementById('messages');
+        var el = document.getElementById('chat-messages');
         var html = el.innerHTML;
         html += '<br><b>' + from + ':</b> ' + msg;
         el.innerHTML = html;
@@ -100,7 +97,6 @@
     }
 
     function displayInterface() {
-        console.log('Displaying interface!');
         document.getElementById('login-div').style.visibility = 'hidden';
         document.getElementById('ui-div').style.visibility = 'visible';
 
@@ -131,8 +127,8 @@
                         html += '<br>' + rows[r];
                     }
                 }
-                var userlist = document.getElementById('messages');
-                userlist.innerHTML = userList.innerHTML + html;
+                var messages = document.getElementById('chat-messages');
+                messages.innerHTML = userList.innerHTML + html;
             },
             'errback': function(err) {
                 alert(err[1]);
@@ -149,8 +145,10 @@
                 var rows = json.records.rows;
                 if (rows) {
                     for (var r = 0; r < rows.length; r++) {
-                        console.log("Row: " + r + " => " + rows[r]);
-                        html += '<br>' + rows[r];
+                        if (me == rows[r])
+                            html += '<b>' + rows[r] + '*</b><br>';
+                        else
+                            html += rows[r] + '<br>';
                     }
                 }
                 var userlist = document.getElementById('user-list');
@@ -206,7 +204,7 @@
                     <b>Messages:</b>
                     <input type="submit" value="Get New" onclick="return showNewMessages();"><br/>
                   </div>
-                  <div id="messages"></div>
+                  <div id="chat-messages"></div>
                 </div>
               </td>
             </tr>
