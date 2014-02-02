@@ -71,7 +71,10 @@
     function addChat(from, msg) {
         var el = document.getElementById('chat-messages');
         var html = el.innerHTML;
-        html += '<br><b>' + from + ':</b> ' + msg;
+        if (from == me)
+            html += '<br><b><font color="red">' + from + ':</font></b> ' + msg;
+        else
+            html += '<br><b>' + from + ':</b> ' + msg;
         el.innerHTML = html;
     }
 
