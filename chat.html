@@ -128,7 +128,7 @@
                     }
                 }
                 var messages = document.getElementById('chat-messages');
-                messages.innerHTML = userList.innerHTML + html;
+                messages.innerHTML = messages.innerHTML + html;
             },
             'errback': function(err) {
                 alert(err[1]);
@@ -146,7 +146,7 @@
                 if (rows) {
                     for (var r = 0; r < rows.length; r++) {
                         if (me == rows[r])
-                            html += '<b>' + rows[r] + '*</b><br>';
+                            html += '<b><font color="red">' + rows[r] + '*</font></b><br>';
                         else
                             html += rows[r] + '<br>';
                     }
