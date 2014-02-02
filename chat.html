@@ -131,7 +131,7 @@
                         html += '<br>' + rows[r];
                     }
                 }
-                var userlist = document.getElementById('chats');
+                var userlist = document.getElementById('messages');
                 userlist.innerHTML = userList.innerHTML + html;
             },
             'errback': function(err) {
@@ -162,8 +162,8 @@
         });
     }
 
-    me = 'SuperDad';
-    window.setTimeout("displayInterface()", 2000);
+    //me = 'SuperDad';
+    //window.setTimeout("displayInterface()", 2000);
     //window.setInterval("showNewMessages()", 5000);
 
   </script>
