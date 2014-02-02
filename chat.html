@@ -78,7 +78,6 @@
 
     function send() {
         var message = document.getElementById('message-box').value;
-        addChat(me, message);
 
         var now = getTime(new Date());
 
@@ -88,6 +87,7 @@
             'argtypes': ['STRING', 'STRING', 'STRING'],
             'callback': function() {
                 console.log("Sent!");
+                showNewMessages();
             },
             'errback': function(err) {
                 alert(err[1]);
@@ -119,16 +119,15 @@
             'callback': function(json) {
                 lastCheck = new Date();
                 console.log(json);
-                var html = '';
                 var rows = json.records.rows;
                 if (rows) {
                     for (var r = 0; r < rows.length; r++) {
                         console.log("Row: " + r + " => " + rows[r]);
-                        html += '<br>' + rows[r];
+                        addChat(rows[r][0], rows[r][1]);
                     }
                 }
-                var messages = document.getElementById('chat-messages');
-                messages.innerHTML = messages.innerHTML + html;
+                //var messages = document.getElementById('chat-messages');
+                //messages.innerHTML = messages.innerHTML + html;
             },
             'errback': function(err) {
                 alert(err[1]);
@@ -146,7 +145,7 @@
                 if (rows) {
                     for (var r = 0; r < rows.length; r++) {
                         if (me == rows[r])
-                            html += '<b><font color="red">' + rows[r] + '*</font></b><br>';
+                            html += '<b><font color="red">' + rows[r] + '</font></b><br>';
                         else
                             html += rows[r] + '<br>';
                     }
