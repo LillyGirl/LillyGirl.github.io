@@ -145,6 +145,23 @@
         });
     }
 
+    function clearMessages() {
+        document.getElementById('chat-messages').innerHTML = '';
+    }
+
+    function deleteAllMessages() {
+        clearMessages();
+        rdb.query({
+            'q': "DELETE FROM game.messages;",
+            'callback': function(json) {
+                // All messages deleted.
+            },
+            'errback': function(err) {
+                alert(err[1]);
+            }
+        });
+    }
+
     function showUsers() {
         rdb.query({
             'q': "SELECT login FROM game.users ORDER BY login;",
@@ -209,7 +226,11 @@
                 <div id="chats" style="width:100%;height:100%;">
                   <div>
                     <b>Messages:</b>
-                    <input type="submit" value="Get New" onclick="return showNewMessages();"><br/>
+                    <input type="submit" value="Get New" onclick="return showNewMessages();">
+                    <input type="submit" value="Clear" onclick="return clearMessages();">
+                    <span style="padding-left:40px;">
+                      <input type="submit" value="Delete All" onclick="return deleteAllMessages();"><br/>
+                    </span>
                   </div>
                   <div id="chat-messages"></div>
                 </div>
